@@ -19,7 +19,7 @@ endif()
 
 add_library(simple-web-server INTERFACE)
 
-target_include_directories(simple-web-server INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+#target_include_directories(simple-web-server INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(Threads REQUIRED)
 target_link_libraries(simple-web-server INTERFACE ${CMAKE_THREAD_LIBS_INIT})
@@ -44,6 +44,7 @@ if(HUNTER_ENABLED)
 
 else(NOT HUNTER_ENABLED)
 
+target_include_directories(simple-web-server INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 # TODO 2020 when Debian Jessie LTS ends:
 # Remove Boost system, thread, regex components; use Boost::<component> aliases; remove Boost target_include_directories
 if(USE_STANDALONE_ASIO)
