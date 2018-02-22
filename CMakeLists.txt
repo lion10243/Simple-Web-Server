@@ -1,6 +1,12 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.2)
 
-project (Simple-Web-Server)
+include("HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.20.11.tar.gz"
+    SHA1 "4959eb9f4d01b5d6a7242b2b6ad7baa059c174ae"
+)
+
+project (Simple-Web-Server LANGUAGES CXX)
 
 option(USE_STANDALONE_ASIO "set ON to use standalone Asio instead of Boost.Asio" OFF)
 option(BUILD_TESTING "set ON to build library tests" OFF)
@@ -17,6 +23,26 @@ target_include_directories(simple-web-server INTERFACE ${CMAKE_CURRENT_SOURCE_DI
 
 find_package(Threads REQUIRED)
 target_link_libraries(simple-web-server INTERFACE ${CMAKE_THREAD_LIBS_INIT})
+
+if(HUNTER_ENABLED)
+    target_compile_features(simple-web-server INTERFACE cxx_std_11)
+
+    hunter_add_package(Boost COMPONENTS filesystem system thread)
+    find_package(Boost COMPONENTS filesystem system thread REQUIRED)
+
+    hunter_add_package(OpenSSL)
+    find_package(OpenSSL REQUIRED)
+
+    target_link_libraries(simple-web-server 
+        INTERFACE 
+            ${CMAKE_THREAD_LIBS_INIT}
+            Boost::boost
+            Boost::filesystem
+            Boost::system
+            Boost::thread
+    )
+
+else(NOT HUNTER_ENABLED)
 
 # TODO 2020 when Debian Jessie LTS ends:
 # Remove Boost system, thread, regex components; use Boost::<component> aliases; remove Boost target_include_directories
@@ -71,7 +97,28 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
     install(FILES server_http.hpp client_http.hpp server_https.hpp client_https.hpp crypto.hpp utility.hpp status_code.hpp DESTINATION include/simple-web-server)
 endif()
 
+endif(HUNTER_ENABLED)
+
 if(BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+# Hunter support
+target_include_directories(simple-web-server 
+    INTERFACE  
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
+        $<INSTALL_INTERFACE:include/simple-web-server> 
+)
+
+install(TARGETS simple-web-server EXPORT Simple-Web-ServerConfig)
+install(FILES 
+    client_http.hpp
+    client_https.hpp
+    crypto.hpp
+    server_http.hpp
+    server_https.hpp
+    status_code.hpp
+    utility.hpp
+    DESTINATION include/simple-web-server
+)
