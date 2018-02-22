@@ -111,7 +111,7 @@ target_include_directories(simple-web-server
         $<INSTALL_INTERFACE:include/simple-web-server> 
 )
 
-install(TARGETS simple-web-server EXPORT Simple-Web-ServerConfig)
+install(TARGETS simple-web-server EXPORT simple-web-serverConfig)
 install(FILES 
     client_http.hpp
     client_https.hpp
