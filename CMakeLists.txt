@@ -112,13 +112,6 @@ target_include_directories(simple-web-server
 )
 
 install(TARGETS simple-web-server EXPORT simple-web-serverConfig)
-install(FILES 
-    client_http.hpp
-    client_https.hpp
-    crypto.hpp
-    server_http.hpp
-    server_https.hpp
-    status_code.hpp
-    utility.hpp
-    DESTINATION include/simple-web-server
-)
+install(FILES server_http.hpp client_http.hpp server_https.hpp client_https.hpp crypto.hpp utility.hpp status_code.hpp DESTINATION include/simple-web-server)
+install(EXPORT simple-web-serverConfig DESTINATION cmake)
+export(TARGETS simple-web-server FILE simple-web-serverConfig.cmake)
