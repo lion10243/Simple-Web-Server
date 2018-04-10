@@ -16,20 +16,33 @@ namespace SimpleWeb {
   using errc = std::errc;
   using system_error = std::system_error;
   namespace make_error_code = std;
-  using string_view = const std::string &; // TODO c++17: use std::string_view
 } // namespace SimpleWeb
 #else
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
-#include <boost/utility/string_ref.hpp>
 namespace SimpleWeb {
   namespace asio = boost::asio;
   using error_code = boost::system::error_code;
   namespace errc = boost::system::errc;
   using system_error = boost::system::system_error;
   namespace make_error_code = boost::system::errc;
-  using string_view = boost::string_ref;
 } // namespace SimpleWeb
+#endif
+
+#if __cplusplus > 201402L || (defined(_MSC_VER) && _MSC_VER >= 1910)
+#include <string_view>
+namespace SimpleWeb {
+  using string_view = std::string_view;
+}
+#elif !defined(USE_STANDALONE_ASIO)
+#include <boost/utility/string_ref.hpp>
+namespace SimpleWeb {
+  using string_view = boost::string_ref;
+}
+#else
+namespace SimpleWeb {
+  using string_view = const std::string &;
+}
 #endif
 
 namespace SimpleWeb {
